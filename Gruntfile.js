@@ -14,10 +14,17 @@ module.exports = function(grunt) {
         copy: {
             exampleLibs: {
                 files: [
+                    {'examples/libs/require.js': ['bower_components/requirejs/require.js']},
                     {'examples/libs/q.js': ['bower_components/q/q.js']},
                     {'examples/libs/request.js': ['bower_components/browser-request/dist/browser/request.js']},
                     {'examples/libs/underscore.js': ['bower_components/underscore/underscore.js']},
-                    {'examples/libs/adhoc.js': ['src/adhoc.js']}
+                    {
+                        cwd: 'src/',
+                        expand: 'true',
+                        flatten: 'false',
+                        dest: 'examples/js/',
+                        src: ['**']
+                    }
                 ]
             }
         },
@@ -30,7 +37,7 @@ module.exports = function(grunt) {
                 showDir: true,
                 autoIndex: true,
                 defaultExt: "html",
-                runInBackground: true
+                runInBackground: false
             }
         }
     });
