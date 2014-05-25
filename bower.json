@@ -13,6 +13,6 @@
     "q": "1.0.1",
     "browser-request": "~0.2.1",
     "underscore": "~1.6.0",
-    "requirejs": "~2.1.11"
+    "uuid-js": "~0.7.5"
   }
 }

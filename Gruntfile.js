@@ -4,12 +4,12 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         watch: {
             source: {
-                files: ['Gruntfile.js', 'src/**/*.js'],
-                tasks: ['jshint:all', 'copy']
+                files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
+                tasks: ['jshint:all', 'karma:unit:run', 'copy']
             }
         },
         jshint: {
-            all: ['Gruntfile.js', 'src/**/*.js']
+            all: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js']
         },
         copy: {
             exampleLibs: {
@@ -18,6 +18,7 @@ module.exports = function(grunt) {
                     {'examples/libs/q.js': ['bower_components/q/q.js']},
                     {'examples/libs/request.js': ['bower_components/browser-request/dist/browser/request.js']},
                     {'examples/libs/underscore.js': ['bower_components/underscore/underscore.js']},
+                    {'examples/libs/uuid.js': ['bower_components/uuid-js/lib/uuid.js']},
                     {
                         cwd: 'src/',
                         expand: 'true',
@@ -26,6 +27,17 @@ module.exports = function(grunt) {
                         src: ['**']
                     }
                 ]
+            },
+            dist: {
+                files: [
+                    {'dist/adhoc.worker.js': ['src/adhoc.worker.js']}
+                ]
+            }
+        },
+        concat: {
+            dist: {
+                src: ['src/adhoc.js', 'src/*.js', '!adhoc.worker.js'],
+                dest: 'dist/adhoc.js'
             }
         },
         'http-server': {
@@ -37,15 +49,23 @@ module.exports = function(grunt) {
                 showDir: true,
                 autoIndex: true,
                 defaultExt: "html",
-                runInBackground: false
+                runInBackground: true
+            }
+        },
+        karma: {
+            unit: {
+                background: true,
+                configFile: 'karma.conf.js'
             }
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-http-server');
+    grunt.loadNpmTasks('grunt-karma');
 
-    grunt.registerTask('default', ['copy', 'http-server:dev', 'watch']);
+    grunt.registerTask('default', ['copy', 'http-server:dev', 'karma:unit:start', 'watch']);
 };

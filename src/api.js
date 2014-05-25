@@ -1,17 +1,5 @@
 (function (adhoc, Q) {
 
-    /* create 4 workers ahead of time */
-    var idleWorkers = [
-        new Worker('worker.js'),
-        new Worker('worker.js'),
-        new Worker('worker.js'),
-        new Worker('worker.js')
-    ];
-    var activeWorkers = {};
-    _.each();
-
-    var jobPromises = {};
-
     /* this is copypasta from angular */
     var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
     var FN_ARG_SPLIT = /,/;
@@ -42,23 +30,19 @@
     };
 
     var makeLambdaStr = function (fnBody) {
-        var prefix = "(function (input) {";
+        var prefix = "(function () {";
         var suffix = "});";
         return prefix + fnBody + suffix;
     };
 
-    var LocalTask = function (fn, input, timeout) {
-
-    };
-
-    var runLocalTask = function (fn, input, retries, timeout) {
+    var runLocalTask = function (fn, input, timeout, retries) {
         var strippedFunction = stripFunction(fn);
-        var fnStr = strippedFunction.body;
-        var d = Q.defer();
-        var lambda = window.eval(makeLambdaStr(fnStr)); /* jshint ignore:line */
-        var result = lambda.apply(input, []);
-        d.resolve(result);
-        return d.promise;
+        var fnStr = makeLambdaStr(strippedFunction.body);
+        var argnames = strippedFunction.args;
+        var argObj = _.object(argnames, input);
+        console.log(argObj);
+        var task = new adhoc.LocalTask(fnStr,  input, timeout, retries);
+        return task.schedule();
     };
 
     var runCloudTask = function (fn, input) {
